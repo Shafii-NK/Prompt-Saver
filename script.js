@@ -25,6 +25,38 @@ function getPreview(text) {
   return text.trim().split(/\s+/).slice(0, 10).join(' ');
 }
 
+function normalizeRating(prompt) {
+  return Number.isInteger(prompt.rating) ? prompt.rating : 0;
+}
+
+function renderStarRating(prompt) {
+  const rating = normalizeRating(prompt);
+
+  return `
+    <div class="rating-group" role="radiogroup" aria-label="Rate prompt effectiveness">
+      <span class="rating-label">Rating</span>
+      <div class="star-row">
+        ${Array.from({ length: 5 }, (_, index) => {
+          const starValue = index + 1;
+          const isFilled = starValue <= rating;
+          return `
+            <button
+              class="star-btn ${isFilled ? 'filled' : ''}"
+              type="button"
+              data-id="${prompt.id}"
+              data-rating="${starValue}"
+              aria-label="Set rating to ${starValue} star${starValue > 1 ? 's' : ''}"
+              aria-pressed="${isFilled ? 'true' : 'false'}"
+            >
+              ★
+            </button>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function renderPrompts() {
   const prompts = loadPrompts();
   promptList.innerHTML = '';
@@ -43,6 +75,7 @@ function renderPrompts() {
         <h3>${escapeHtml(prompt.title)}</h3>
         <p class="prompt-preview">${escapeHtml(getPreview(prompt.content))}${prompt.content.trim().split(/\s+/).length > 10 ? '...' : ''}</p>
       </div>
+      ${renderStarRating(prompt)}
       <div class="card-footer">
         <span class="meta">Local prompt</span>
         <button class="delete-btn" type="button" data-id="${prompt.id}">Delete</button>
@@ -77,6 +110,7 @@ form.addEventListener('submit', (event) => {
     id: createPromptId(),
     title,
     content,
+    rating: 0,
   });
 
   savePrompts(prompts);
@@ -86,6 +120,23 @@ form.addEventListener('submit', (event) => {
 });
 
 promptList.addEventListener('click', (event) => {
+  const ratingButton = event.target.closest('.star-btn');
+  if (ratingButton) {
+    const promptId = ratingButton.dataset.id;
+    const rating = Number(ratingButton.dataset.rating);
+    const prompts = loadPrompts();
+    const prompt = prompts.find((item) => item.id === promptId);
+
+    if (!prompt) {
+      return;
+    }
+
+    prompt.rating = rating;
+    savePrompts(prompts);
+    renderPrompts();
+    return;
+  }
+
   const deleteButton = event.target.closest('.delete-btn');
   if (!deleteButton) {
     return;
