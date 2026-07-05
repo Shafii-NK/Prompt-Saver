@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompt Library</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <p class="eyebrow">Developer Prompt Library</p>
+      <h1>Save, organize, and reuse your best prompts.</h1>
+      <p class="hero-copy">
+        Keep prompt ideas in one clean local library with quick previews and one-click removal.
+      </p>
+    </section>
+
+    <section class="panel">
+      <form id="promptForm" class="prompt-form">
+        <div class="field-group">
+          <label for="title">Prompt Title</label>
+          <input id="title" name="title" type="text" placeholder="e.g. Refactor helper functions" required />
+        </div>
+
+        <div class="field-group">
+          <label for="content">Prompt Content</label>
+          <textarea id="content" name="content" rows="7" placeholder="Write your prompt here..." required></textarea>
+        </div>
+
+        <button type="submit" class="primary-btn">Save Prompt</button>
+      </form>
+    </section>
+
+    <section class="library-section">
+      <div class="section-heading">
+        <h2>Saved Prompts</h2>
+        <p>Stored locally in your browser.</p>
+      </div>
+
+      <div id="promptList" class="prompt-grid"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
