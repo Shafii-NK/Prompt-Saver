@@ -9,6 +9,7 @@
   --accent: #6ee7ff;
   --accent-strong: #22d3ee;
   --danger: #fb7185;
+  --success: #86efac;
   --shadow: 0 24px 70px rgba(2, 8, 23, 0.45);
 }
 
@@ -71,6 +72,13 @@ body::before {
   font-size: 1.05rem;
 }
 
+.enhancer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 22px;
+  margin-top: 24px;
+}
+
 .panel,
 .library-section {
   background: var(--panel);
@@ -84,9 +92,20 @@ body::before {
   padding: 24px;
 }
 
+.enhancer-panel,
+.output-panel {
+  min-height: 100%;
+}
+
 .prompt-form {
   display: grid;
   gap: 18px;
+}
+
+.save-form {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 18px;
 }
 
 .field-group {
@@ -126,6 +145,113 @@ textarea:focus {
 textarea {
   resize: vertical;
   min-height: 170px;
+}
+
+.template-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.template-chip,
+.feedback-btn,
+.secondary-btn {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.template-chip {
+  padding: 10px 14px;
+  background: rgba(2, 6, 23, 0.42);
+  color: #dbeafe;
+}
+
+.template-chip:hover,
+.feedback-btn:hover,
+.secondary-btn:hover {
+  transform: translateY(-1px);
+}
+
+.feedback-strip {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(2, 6, 23, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.feedback-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.feedback-btn,
+.secondary-btn {
+  padding: 10px 14px;
+  color: var(--text);
+  background: rgba(2, 6, 23, 0.38);
+}
+
+.secondary-btn {
+  white-space: nowrap;
+}
+
+.output-card,
+.testimonial-card {
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(9, 14, 28, 0.96));
+}
+
+.output-card {
+  padding: 18px;
+}
+
+.output-label {
+  margin: 0 0 10px;
+  color: #7dd3fc;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+.output-text {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.7;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.testimonial-card {
+  margin-top: 16px;
+  padding: 18px;
+}
+
+.testimonial-quote {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.testimonial-meta {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.compact {
+  margin-bottom: 16px;
 }
 
 .primary-btn,
@@ -172,6 +298,10 @@ textarea {
 
 .section-heading p {
   color: var(--muted);
+}
+
+.section-heading.compact {
+  align-items: flex-start;
 }
 
 .prompt-grid {
@@ -281,6 +411,10 @@ textarea {
   .app-shell {
     width: min(100% - 20px, 1100px);
     padding-top: 20px;
+  }
+
+  .enhancer-layout {
+    grid-template-columns: 1fr;
   }
 
   .panel,

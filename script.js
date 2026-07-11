@@ -1,8 +1,15 @@
+const enhancerForm = document.getElementById('enhancerForm');
+const promptInput = document.getElementById('promptInput');
+const optimizedPrompt = document.getElementById('optimizedPrompt');
+const copyPromptBtn = document.getElementById('copyPromptBtn');
+const templateChips = document.querySelectorAll('.template-chip');
+const feedbackButtons = document.querySelectorAll('.feedback-btn');
 const form = document.getElementById('promptForm');
 const titleInput = document.getElementById('title');
 const contentInput = document.getElementById('content');
 const promptList = document.getElementById('promptList');
 const storageKey = 'prompt-library-prompts';
+const feedbackKey = 'prompt-enhancer-feedback';
 
 function loadPrompts() {
   try {
@@ -23,6 +30,73 @@ function createPromptId() {
 
 function getPreview(text) {
   return text.trim().split(/\s+/).slice(0, 10).join(' ');
+}
+
+function inferRole(description) {
+  if (description.includes('email')) return 'email copywriter';
+  if (description.includes('blog')) return 'content strategist';
+  if (description.includes('linkedin')) return 'professional social media writer';
+  if (description.includes('caption')) return 'brand copywriter';
+  if (description.includes('ad') || description.includes('advert')) return 'performance marketer';
+  if (description.includes('resume') || description.includes('cv')) return 'career writing specialist';
+  if (description.includes('summary')) return 'clear and concise editor';
+  return 'expert prompt writer';
+}
+
+function buildOptimizedPrompt(rawInput) {
+  const input = rawInput.trim();
+
+  if (!input) {
+    return 'Start typing a request to generate a stronger prompt.';
+  }
+
+  const role = inferRole(input.toLowerCase());
+  const task = input.endsWith('.') ? input : `${input}.`;
+
+  return [
+    `You are an experienced ${role}.`,
+    '',
+    `Task: ${task}`,
+    '',
+    'Make the response practical, specific, and easy to act on.',
+    'If key details are missing, ask up to 3 short clarifying questions first.',
+    'Return the final answer in a clean format that is easy to copy and use.',
+  ].join('\n');
+}
+
+function updateOptimizedPrompt() {
+  const value = promptInput.value;
+  optimizedPrompt.textContent = buildOptimizedPrompt(value);
+}
+
+function getFeedback() {
+  try {
+    const saved = localStorage.getItem(feedbackKey);
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveFeedback(feedback) {
+  localStorage.setItem(feedbackKey, JSON.stringify(feedback));
+}
+
+async function copyOptimizedPrompt() {
+  const text = optimizedPrompt.textContent;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    copyPromptBtn.textContent = 'Copied';
+    window.setTimeout(() => {
+      copyPromptBtn.textContent = 'Copy prompt';
+    }, 1200);
+  } catch {
+    copyPromptBtn.textContent = 'Copy failed';
+    window.setTimeout(() => {
+      copyPromptBtn.textContent = 'Copy prompt';
+    }, 1200);
+  }
 }
 
 function normalizeRating(prompt) {
@@ -95,6 +169,42 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
+templateChips.forEach((chip) => {
+  chip.addEventListener('click', () => {
+    promptInput.value = chip.dataset.template || '';
+    updateOptimizedPrompt();
+    promptInput.focus();
+  });
+});
+
+feedbackButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    const feedback = getFeedback();
+    const key = button.dataset.feedback;
+    feedback[key] = (feedback[key] || 0) + 1;
+    saveFeedback(feedback);
+    button.textContent = 'Noted';
+    window.setTimeout(() => {
+      button.textContent = button.dataset.feedback === 'more-guidance'
+        ? 'More guidance'
+        : button.dataset.feedback === 'shorter-results'
+          ? 'Shorter results'
+          : 'Better examples';
+    }, 1000);
+  });
+});
+
+promptInput.addEventListener('input', updateOptimizedPrompt);
+
+copyPromptBtn.addEventListener('click', copyOptimizedPrompt);
+
+enhancerForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const optimized = buildOptimizedPrompt(promptInput.value);
+  contentInput.value = optimized;
+  titleInput.focus();
+});
+
 form.addEventListener('submit', (event) => {
   event.preventDefault();
 
@@ -148,4 +258,6 @@ promptList.addEventListener('click', (event) => {
   renderPrompts();
 });
 
+promptInput.value = 'I need help turning a simple idea into a prompt that gets a detailed and useful answer.';
+updateOptimizedPrompt();
 renderPrompts();
